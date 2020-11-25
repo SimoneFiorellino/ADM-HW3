@@ -5,15 +5,15 @@ import os
 
 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.3'}
 
-count = 0
-indice_folder=200
+count = 0   #options: 0, 10000, 20000
+folder_index= 0
+#path = f"HTML_books/list_page_{folder_index}"
 
-
-f = open("test_url_collected.txt", "r")
+f = open("url_collected.txt", "r")
 for x in f:
-    if (count % 10)==0:
-        indice_folder+=1
-        path = f"HTML_books/list_page_{indice_folder}"
+    if (count % 100)==0:
+        folder_index+=1
+        path = f"HTML_books/list_page_{folder_index}"
         try:
             os.mkdir(path)
         except OSError:
