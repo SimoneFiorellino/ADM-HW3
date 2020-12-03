@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import re
 import os
 import csv
+from langdetect import detect
 
 def find_bookTitle():
     try:
@@ -20,21 +21,35 @@ def find_bookSeries():
         print("issue in bookSeries")
         return None
 
-
 def find_bookAuthors():
     try:
-        bookAuthors = bs.find('a', {'class': 'authorName'})
-        return re.sub(r'\n\s*\n', '\n', bookAuthors.text.strip())
+        bookAuthors = bs.find('div', {'id': 'bookAuthors'})
+        bookAuthors = bookAuthors.find_all('span', {'itemprop': 'name'})
+
+        name_list=''
+        for i in range(0,len(bookAuthors)-1):
+            my_name = re.sub(r'\n\s*\n', '\n', bookAuthors[i].text.strip())
+            #print(my_name)
+            name_list+=f'{my_name}, '
+        else: 
+            my_name = re.sub(r'\n\s*\n', '\n', bookAuthors[i+1].text.strip())
+            #print(my_name)
+            name_list+=f'{my_name}'
+        return name_list
     except:
-        print("issue in bookAuthors")
-        return None
+        try:
+            bookAuthors = bs.find('a', {'class': 'authorName'})
+            return re.sub(r'\n\s*\n', '\n', bookAuthors.text.strip())
+        except:
+            print("issue in bookAuthors")
+            return None
 
 def find_ratingValue():
     try:
         ratingValue = bs.find('span', {'itemprop': 'ratingValue'})
         return re.sub(r'\n\s*\n', '\n', ratingValue.text.strip())
     except:
-        print("issue in bookAuthors")
+        print("issue in ratingValue")
         return None
 
 def find_ratingCount():
@@ -42,7 +57,7 @@ def find_ratingCount():
         ratingValue = bs.find('meta', {'itemprop': 'ratingCount'})['content']
         return ratingValue
     except:
-        print("issue in ratingValue")
+        print("issue in ratingCount")
         return None
 
 def find_reviewCount():
@@ -101,7 +116,6 @@ def find_characters():
                 else: name_list+=f'{characters[i+1].text}'
                 
                 return name_list
-        return 'issue'
     except:
         print("issue in characters")
         return None
@@ -113,23 +127,31 @@ def find_setting():
             if i.text=='Setting':
                 setting = i.findNext('div')
                 setting = setting.find_all(['a','span'])
-                name_list = ''
-                for i in range(0,len(setting)-1):
-                    my_set = re.sub(r'\n\s*\n', '\n', setting[i].text.strip())
-                    name_list+=f'{my_set}, '
-                else: 
-                    my_set = re.sub(r'\n\s*\n', '\n', setting[i+1].text.strip())
-                    name_list+=f'{my_set}'
-                return name_list
+                name_list = re.sub(r'\n\s*\n', '', setting[0].text.strip())
+                for i in range(1,len(setting)):
+                    my_place = re.sub(r'\n\s*\n', '', setting[i].text.strip())
+                    if not(re.match(r"…", my_place)):
+                        name_list+=f', {my_place}'
+        return name_list
     except:
         print("issue in setting")
         return None
 
-
+def is_eng():
+    try:
+        if detect(find_plot()) == 'en':
+            return True
+        else:
+            return False
+    except:
+        print('Allert!')
+        return False
 
 
 link = 'E:/Universita_SAPIENZA/ADM/GitHub_HW03/HTML_books/list_page_1/article_1.html'
 page_count=0
+                       
+
 for folder_index in range(1,301):
 
     path = f"TSV/list_page_{folder_index}"
@@ -144,15 +166,32 @@ for folder_index in range(1,301):
         my_link = f'E:/Universita_SAPIENZA/ADM/GitHub_HW03/HTML_books/list_page_{folder_index}/article_{page_count}.html'
         bs = BeautifulSoup(open(my_link, encoding="utf8"), "html.parser")
         bs = bs.find('div', {'id':'metacol'})   #considering only the part of code inside
-
-        try:
-            with open(f'{path}/article_{page_count}.tsv', 'wt') as out_file:
-                tsv_writer = csv.writer(out_file, delimiter='\t')
-                tsv_writer.writerow(['bookTitle', 'bookSeries', 'bookAuthors', 'ratingValue', 'ratingCount', \
-                                'reviewCount', 'plot', 'numberofPages', 'publishingDate', 'characters', 'setting'])
-                tsv_writer.writerow([find_bookTitle(), find_bookSeries(), find_bookAuthors(), find_ratingValue(), find_ratingCount(),\
-                                find_reviewCount(), find_plot(), find_numberofPages(), find_publishingDate(), find_characters(), find_setting()])
-        except:
-            print(f'issue in create {my_link}')
+        if is_eng():
+            try:
+                with open(f'{path}/article_{page_count}.tsv', 'wt') as out_file:
+                    tsv_writer = csv.writer(out_file, delimiter='\t')
+                    tsv_writer.writerow(['bookTitle', 'bookSeries', 'bookAuthors', 'ratingValue', 'ratingCount', \
+                                    'reviewCount', 'plot', 'numberofPages', 'publishingDate', 'characters', 'setting'])
+                    tsv_writer.writerow([find_bookTitle(), find_bookSeries(), find_bookAuthors(), find_ratingValue(), find_ratingCount(),\
+                                    find_reviewCount(), find_plot(), find_numberofPages(), find_publishingDate(), find_characters(), find_setting()])
+            except:
+                print(f'issue in create {my_link}')
         page_count+=1
 
+# my_link = f'E:/Universita_SAPIENZA/ADM/GitHub_HW03/HTML_books/list_page_1/article_2.html'
+# bs = BeautifulSoup(open(my_link, encoding="utf8"), "html.parser")
+# bs = bs.find('div', {'id':'metacol'})
+
+# print(is_eng())
+
+# print(find_bookTitle())
+# print(find_bookSeries())
+# print(find_bookAuthors())
+# print(find_ratingValue())
+# print(find_ratingCount())
+# print(find_reviewCount())
+# print(find_plot())
+# print(find_numberofPages())
+# print(find_publishingDate())
+# print(find_characters())
+# print(find_setting())
