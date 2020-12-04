@@ -5,23 +5,23 @@ import os
 import csv
 from langdetect import detect
 
-def find_bookTitle():
+def get_bookTitle():
     try:
         bookTitle = bs.find('h1', {'id': 'bookTitle'})
         return re.sub(r'\n\s*\n', '\n', bookTitle.text.strip())
     except:
-        print("issue in bookTitle")
-        return None
+        #print("issue in bookTitle")
+        return ''
 
-def find_bookSeries():
+def get_bookSeries():
     try:
         bookSeries = bs.find('h2', {'id': 'bookSeries'})
         return re.sub(r'\n\s*\n', '\n', bookSeries.text.strip())
     except:
-        print("issue in bookSeries")
-        return None
+        #print("issue in bookSeries")
+        return ''
 
-def find_bookAuthors():
+def get_bookAuthors():
     try:
         bookAuthors = bs.find('div', {'id': 'bookAuthors'})
         bookAuthors = bookAuthors.find_all('span', {'itemprop': 'name'})
@@ -41,34 +41,34 @@ def find_bookAuthors():
             bookAuthors = bs.find('a', {'class': 'authorName'})
             return re.sub(r'\n\s*\n', '\n', bookAuthors.text.strip())
         except:
-            print("issue in bookAuthors")
-            return None
+            #print("issue in bookAuthors")
+            return ''
 
-def find_ratingValue():
+def get_ratingValue():
     try:
         ratingValue = bs.find('span', {'itemprop': 'ratingValue'})
         return re.sub(r'\n\s*\n', '\n', ratingValue.text.strip())
     except:
-        print("issue in ratingValue")
-        return None
+        #print("issue in ratingValue")
+        return ''
 
-def find_ratingCount():
+def get_ratingCount():
     try:
         ratingValue = bs.find('meta', {'itemprop': 'ratingCount'})['content']
         return ratingValue
     except:
-        print("issue in ratingCount")
-        return None
+        #print("issue in ratingCount")
+        return ''
 
-def find_reviewCount():
+def get_reviewCount():
     try:
         reviewCount = bs.find('meta', {'itemprop': 'reviewCount'})['content']
         return reviewCount
     except:
-        print("issue in reviewCount")
-        return None
+        #print("issue in reviewCount")
+        return ''
 
-def find_plot():
+def get_plot():
     try:
         plot = bs.find('div', {'id': 'descriptionContainer'})
         plot = plot.find_all('span')
@@ -81,17 +81,17 @@ def find_plot():
             return plot
         except:
             print("issue in plot")
-            return None
+            return ''
 
-def find_numberofPages():
+def get_numberofPages():
     try:
         NumberofPages = bs.find('span', {'itemprop': 'numberOfPages'})
         return re.sub(r'\s[a-zA-Z]{0,}', '', NumberofPages.text)
     except:
         print("issue in NumberofPages")
-        return None
+        return ''
 
-def find_publishingDate():
+def get_publishingDate():
     try:
         publishingDate = bs.find('div', {'id': 'details'}) 
         publishingDate = publishingDate.find_all('div', {'class': 'row'})
@@ -101,9 +101,9 @@ def find_publishingDate():
         return publishingDate
     except:
         print("issue in publishingDate")
-        return None
+        return ''
 
-def find_characters():
+def get_characters():
     try:
         characters = bs.find_all('div', {'class': 'infoBoxRowTitle'})
         for i in characters:
@@ -118,9 +118,9 @@ def find_characters():
                 return name_list
     except:
         print("issue in characters")
-        return None
+        return ''
 
-def find_setting():
+def get_setting():
     try:
         characters = bs.find_all('div', {'class': 'infoBoxRowTitle'})
         for i in characters:
@@ -135,22 +135,26 @@ def find_setting():
         return name_list
     except:
         print("issue in setting")
-        return None
+        return ''
 
 def is_eng():
     try:
-        if detect(find_plot()) == 'en':
+        if detect(get_plot()) == 'en':
             return True
         else:
             return False
     except:
-        print('Allert!')
+        print('Issue in detect function')
         return False
 
+def get_url():
+    try:
+        url = bs.find('meta', {'property': 'og:url'})['content']
+        return url
+    except:
+        return ''
 
-link = 'E:/Universita_SAPIENZA/ADM/GitHub_HW03/HTML_books/list_page_1/article_1.html'
 page_count=0
-                       
 
 for folder_index in range(1,301):
 
@@ -165,33 +169,36 @@ for folder_index in range(1,301):
     for j in range(0,100):
         my_link = f'E:/Universita_SAPIENZA/ADM/GitHub_HW03/HTML_books/list_page_{folder_index}/article_{page_count}.html'
         bs = BeautifulSoup(open(my_link, encoding="utf8"), "html.parser")
-        bs = bs.find('div', {'id':'metacol'})   #considering only the part of code inside
+        my_url = get_url()
+        bs = bs.find('div', {'id':'metacol'})   #considering only this part of the html
         if is_eng():
             try:
                 with open(f'{path}/article_{page_count}.tsv', 'wt') as out_file:
                     tsv_writer = csv.writer(out_file, delimiter='\t')
                     tsv_writer.writerow(['bookTitle', 'bookSeries', 'bookAuthors', 'ratingValue', 'ratingCount', \
-                                    'reviewCount', 'plot', 'numberofPages', 'publishingDate', 'characters', 'setting'])
-                    tsv_writer.writerow([find_bookTitle(), find_bookSeries(), find_bookAuthors(), find_ratingValue(), find_ratingCount(),\
-                                    find_reviewCount(), find_plot(), find_numberofPages(), find_publishingDate(), find_characters(), find_setting()])
+                                    'reviewCount', 'plot', 'numberofPages', 'publishingDate', 'characters', 'setting', 'url'])
+                    tsv_writer.writerow([get_bookTitle(), get_bookSeries(), get_bookAuthors(), get_ratingValue(), get_ratingCount(),\
+                                    get_reviewCount(), get_plot(), get_numberofPages(), get_publishingDate(), get_characters(), get_setting(), my_url])
             except:
                 print(f'issue in create {my_link}')
         page_count+=1
 
+
+
 # my_link = f'E:/Universita_SAPIENZA/ADM/GitHub_HW03/HTML_books/list_page_1/article_2.html'
 # bs = BeautifulSoup(open(my_link, encoding="utf8"), "html.parser")
+# print(get_url())
 # bs = bs.find('div', {'id':'metacol'})
-
 # print(is_eng())
 
-# print(find_bookTitle())
-# print(find_bookSeries())
-# print(find_bookAuthors())
-# print(find_ratingValue())
-# print(find_ratingCount())
-# print(find_reviewCount())
-# print(find_plot())
-# print(find_numberofPages())
-# print(find_publishingDate())
-# print(find_characters())
-# print(find_setting())
+# print(get_bookTitle())
+# print(get_bookSeries())
+# print(get_bookAuthors())
+# print(get_ratingValue())
+# print(get_ratingCount())
+# print(get_reviewCount())
+# print(get_plot())
+# print(get_numberofPages())
+# print(get_publishingDate())
+# print(get_characters())
+# print(get_setting())
