@@ -176,9 +176,9 @@ for folder_index in range(1,301):
                 with open(f'{path}/article_{page_count}.tsv', 'wt') as out_file:
                     tsv_writer = csv.writer(out_file, delimiter='\t')
                     tsv_writer.writerow(['bookTitle', 'bookSeries', 'bookAuthors', 'ratingValue', 'ratingCount', \
-                                    'reviewCount', 'plot', 'numberofPages', 'publishingDate', 'characters', 'setting', 'url'])
+                                    'reviewCount', 'plot', 'numberofPages', 'publishingDate', 'characters', 'setting'])
                     tsv_writer.writerow([get_bookTitle(), get_bookSeries(), get_bookAuthors(), get_ratingValue(), get_ratingCount(),\
-                                    get_reviewCount(), get_plot(), get_numberofPages(), get_publishingDate(), get_characters(), get_setting(), my_url])
+                                    get_reviewCount(), get_plot(), get_numberofPages(), get_publishingDate(), get_characters(), get_setting()])
             except:
                 print(f'issue in create {my_link}')
         page_count+=1
