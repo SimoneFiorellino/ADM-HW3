@@ -33,12 +33,17 @@ First of all we pre-processed all the information collected for each book by
 
 After created the dictionary and the inverted index files, we implement a simply search engine. It consider only the plot of each book.
 
-for this phase the mainly libraries used are nltk, unidecode, json, prettytable and textwrap.
+for this phase the mainly libraries used are nltk, unidecode, json.
 
 ## Define a new score!
 
+For the score, we first look at the query and extract useful information:
+- the number of pages (if "xxx pages" is in the query)
+- the number of stars in the rating (if "x stars" is in the query)
+- the year (if there is 4 digit in the query)
+- any details about the book (if there is a "details: ..." at the end of the query)
 
-
+The 3 first informations are used to compute a distance between them and the corresponding informations of each book. For the last one, we check the intesection with the book authors, characters and settings. All this is normalized and added to the plot similarity to create a total score which is use to sort.
 
 ## Algorithmic Question
 
