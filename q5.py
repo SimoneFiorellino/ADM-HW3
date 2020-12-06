@@ -1,3 +1,6 @@
+#Question 5
+
+
 def subsequence(st):
     if len(st) == 1:
         return list(st)
@@ -5,9 +8,10 @@ def subsequence(st):
         subs = subsequence(st[:len(st)-1])
         for element in subs:
             if element[-1] < st[-1]:
-                subs.append(element + st[-1])
-        subs.append(st[-1])
+                subs += [element + st[-1]]
+        subs += [st[-1]]
         return subs
+
 
 def long_com_seq(s1 , s2): 
     x = len(s1) 
