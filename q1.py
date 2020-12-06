@@ -81,137 +81,139 @@ def collect_html_pages():
 
 
 #get tsv files
-def get_bookTitle():
-    try:
-        bookTitle = next(bs.find(id='bookTitle').stripped_strings, '')
-        return bookTitle
-    except:
-        #print("issue in bookTitle")
-        return ''
+def get_all_tsv():
 
-def get_bookSeries():
-    try:
-        bookSeries = next(soup.find(id='bookSeries').stripped_strings, '')
-        return bookSeries
-    except:
-        #print("issue in bookSeries")
-        return ''
-
-def get_bookAuthors():
-    try:
-        bookAuthors = ' '.join(list(bs.find(id='bookAuthors').stripped_strings)[1:])
-        return bookAuthors
-    except:
-        return ''
-
-def get_ratingValue():
-    try:
-        ratingValue = bs.find('span', {'itemprop': 'ratingValue'})
-        return re.sub(r'\n\s*\n', '\n', ratingValue.text.strip())
-    except:
-        #print("issue in ratingValue")
-        return ''
-
-def get_ratingCount():
-    try:
-        ratingValue = bs.find('meta', {'itemprop': 'ratingCount'})['content']
-        return ratingValue
-    except:
-        #print("issue in ratingCount")
-        return ''
-
-def get_reviewCount():
-    try:
-        reviewCount = bs.find('meta', {'itemprop': 'reviewCount'})['content']
-        return reviewCount
-    except:
-        #print("issue in reviewCount")
-        return ''
-
-def get_plot():
-    try:
-        plot = bs.find('div', {'id': 'descriptionContainer'})
-        plot = plot.find_all('span')
-        
-        plot = plot[1].text
-        return plot
-    except:
+    def get_bookTitle():
         try:
-            plot = plot[0].text
+            bookTitle = next(bs.find(id='bookTitle').stripped_strings, '')
+            return bookTitle
+        except:
+            #print("issue in bookTitle")
+            return ''
+
+    def get_bookSeries():
+        try:
+            bookSeries = next(bs.find(id='bookSeries').stripped_strings, '')
+            return bookSeries
+        except:
+            #print("issue in bookSeries")
+            return ''
+
+    def get_bookAuthors():
+        try:
+            bookAuthors = ' '.join(list(bs.find(id='bookAuthors').stripped_strings)[1:])
+            return bookAuthors
+        except:
+            return ''
+
+    def get_ratingValue():
+        try:
+            ratingValue = bs.find('span', {'itemprop': 'ratingValue'})
+            return re.sub(r'\n\s*\n', '\n', ratingValue.text.strip())
+        except:
+            #print("issue in ratingValue")
+            return ''
+
+    def get_ratingCount():
+        try:
+            ratingValue = bs.find('meta', {'itemprop': 'ratingCount'})['content']
+            return ratingValue
+        except:
+            #print("issue in ratingCount")
+            return ''
+
+    def get_reviewCount():
+        try:
+            reviewCount = bs.find('meta', {'itemprop': 'reviewCount'})['content']
+            return reviewCount
+        except:
+            #print("issue in reviewCount")
+            return ''
+
+    def get_plot():
+        try:
+            plot = bs.find('div', {'id': 'descriptionContainer'})
+            plot = plot.find_all('span')
+            
+            plot = plot[1].text
             return plot
         except:
             try:
-                plot = bs.find(id='description')
-                if plot != None:
-                    plot = ' '.join(list(plot.stripped_strings)).replace('...more', '').replace('...less', '')
-                    return plot
-                else:
-                    #log.write(f'[Error] #{i}: No description\n')
-                    #bar.next()
-                    return ''
+                plot = plot[0].text
+                return plot
             except:
-                print("issue in plot")
-                return ''
-            
-def get_numberofPages():
-    try:
-        NumberofPages = bs.find('span', {'itemprop': 'numberOfPages'})
-        return re.sub(r'\s[a-zA-Z]{0,}', '', NumberofPages.text)
-    except:
-        print("issue in NumberofPages")
-        return ''
-
-def get_publishingDate():
-    try:
-        publishingDate = soup.select('#details > .row')
-        if len(publishingDate) > 1:
-            publishingDate = re.sub(r'(Published|\n\s*|by.*)', '', next(publishingDate[1].stripped_strings))
-        else:
-            publishingDate = ''
-        return publishingDate
-    except:
-        #print("issue in publishingDate")
-        return ''
-
-def get_characters():
-    try:
-        characters = bs.find(text='Characters')
-        if characters != None:
-            characters = re.sub(r'\.\.\.\w{4}', '', ''.join(list(characters.parent.next_sibling.next_sibling.stripped_strings))).replace(',', ', ')
-            return characters
-        else:
+                try:
+                    plot = bs.find(id='description')
+                    if plot != None:
+                        plot = ' '.join(list(plot.stripped_strings)).replace('...more', '').replace('...less', '')
+                        return plot
+                    else:
+                        #log.write(f'[Error] #{i}: No description\n')
+                        #bar.next()
+                        return ''
+                except:
+                    print("issue in plot")
+                    return ''
+                
+    def get_numberofPages():
+        try:
+            NumberofPages = bs.find('span', {'itemprop': 'numberOfPages'})
+            return re.sub(r'\s[a-zA-Z]{0,}', '', NumberofPages.text)
+        except:
+            print("issue in NumberofPages")
             return ''
-    except:
-        return ''
 
-def get_setting():
-    try:
-        setting = soup.find(text='Setting')
-        if setting != None:
-            setting = re.sub(r'…\w{4}', '', ', '.join(list(setting.parent.next_sibling.next_sibling.stripped_strings)))
-        else:
-            setting = ''
-        return name_list
-    except:
-        print("issue in setting")
-        return ''
+    def get_publishingDate():
+        try:
+            publishingDate = bs.select('#details > .row')
+            if len(publishingDate) > 1:
+                publishingDate = re.sub(r'(Published|\n\s*|by.*)', '', next(publishingDate[1].stripped_strings))
+            else:
+                publishingDate = ''
+            return publishingDate
+        except:
+            #print("issue in publishingDate")
+            return ''
 
-def is_eng():
-    try:
-        if detect(get_plot()) == 'en':
-            return True
-        else:
+    def get_characters():
+        try:
+            characters = bs.find(text='Characters')
+            if characters != None:
+                characters = re.sub(r'\.\.\.\w{4}', '', ''.join(list(characters.parent.next_sibling.next_sibling.stripped_strings))).replace(',', ', ')
+                return characters
+            else:
+                return ''
+        except:
+            return ''
+
+    def get_setting():
+        try:
+            setting = bs.find(text='Setting')
+            if setting != None:
+                setting = re.sub(r'…\w{4}', '', ', '.join(list(setting.parent.next_sibling.next_sibling.stripped_strings)))
+            else:
+                setting = ''
+            return setting
+        except:
+            print("issue in setting")
+            return ''
+
+    def is_eng():
+        try:
+            if detect(get_plot()) == 'en':
+                return True
+            else:
+                return False
+        except:
+            print('Issue in detect function')
             return False
-    except:
-        print('Issue in detect function')
-        return False
 
-def get_all_tsv():
+
     page_count=0    #num pages
 
     for folder_index in range(1,301):
 
-        path = f"TSV/list_page_{folder_index}"
+        path = f"TSV_books/list_page_{folder_index}"
         #creating folders
         try:
             os.mkdir(path)
@@ -222,7 +224,7 @@ def get_all_tsv():
 
         #creating tsv 
         for _ in range(0,100):
-            my_link = f'E:/Universita_SAPIENZA/ADM/GitHub_HW03/HTML_books/list_page_{folder_index}/article_{page_count}.html'
+            my_link = f'HTML_books/list_page_{folder_index}/article_{page_count}.html'
             bs = BeautifulSoup(open(my_link, encoding="utf8"), "html.parser")
             bs = bs.find('div', {'id':'metacol'})   #considering only this part of the html
             if is_eng():
