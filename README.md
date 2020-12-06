@@ -42,6 +42,10 @@ for this phase the mainly libraries used are nltk, unidecode, json, prettytable 
 
 ## Algorithmic Question
 
+Here is a recursive method that computes the length of the maximum-length subsequence in alphabetical order with several examples.
+There is also a dynamic version that takes two input strings, as seen during the lecture.
+Furthermore, there is induction proof that X\[i] is correct.
+
 
 ## Script descriptions
 
