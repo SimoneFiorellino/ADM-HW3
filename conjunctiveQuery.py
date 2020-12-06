@@ -12,8 +12,9 @@ def search(query):
 
     documentList = []
     for word in query:
-        wordId = vocabulary[word]
-        documentList.append(invertedIndex[str(wordId)])
+        if word in vocabulary:
+            wordId = vocabulary[word]
+            documentList.append(invertedIndex[str(wordId)])
 
     if len(documentList) > 1:
         resultId = []

@@ -8,7 +8,7 @@ download()
 query = input('Query: ')
 query = preprocessor(query)
 resultId = search(query)
-k = 5
+k = 10
 
 with open('generated/documentNorm.json', 'r') as json_file:
     documentNorm = json.load(json_file)
@@ -26,7 +26,8 @@ for result in resultId:
 
     summation = 0
     for token in query:
-        summation += [x for x in invertedIndexTfidf[str(vocabulary[token])] if x[0] == int(result)][0][1]
+        if token in vocabulary:
+            summation += [x for x in invertedIndexTfidf[str(vocabulary[token])] if x[0] == int(result)][0][1]
 
     similarity = summation / norm
 
