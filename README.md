@@ -46,7 +46,6 @@ Here is a recursive method that computes the length of the maximum-length subseq
 There is also a dynamic version that takes two input strings, as seen during the lecture.
 Furthermore, there is induction proof that X\[i] is correct.
 
-
 ## Script descriptions
 
 1. __`q1.py`__: 
@@ -55,9 +54,13 @@ Furthermore, there is induction proof that X\[i] is correct.
     >2. collect_html_pages()
     >3. get_all_tsv()
     
-1. __`q2.py`__:
+2. __`q2.py`__:
     >This script provides all the function to complete the second question.
     >1. download()
     >2. preprocessor(text: str)
+ 
+5. __`q5.py`__: 
+    >1. subsequence(st)
+    >2. long_com_seq(s1 , s2)
     
     
