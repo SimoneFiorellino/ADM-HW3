@@ -2,3 +2,4 @@ HTML_books/
 TSV_books/
 .vscode/
 __pycache__/
+**/DS_Store
